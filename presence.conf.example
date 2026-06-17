@@ -1,0 +1,28 @@
+# presence-watch configuration. Copy to presence.conf and edit.
+#   cp presence.conf.example presence.conf
+# (presence.conf is gitignored; everything here is overridable by env too.)
+
+# Your Apple Watch's Bluetooth address. Find it with: bin/find-my-watch.sh
+WATCH_ADDR="AA:BB:CC:DD:EE:FF"
+
+# Present when RSSI >= threshold. Near ≈ -50; -75 is a roomy desk radius.
+# Watch RSSI is NOISY — it can swing 30+ dB while you sit still (measured: -44
+# to -87 at one desk). Tune from your own logs and lean generous; the hysteresis
+# below absorbs brief dips so a generous threshold won't flap you to "away".
+RSSI_THRESHOLD=-75
+
+# Consecutive weak/absent reads before flipping to "away" (hysteresis).
+# present is immediate; away is debounced. 2 ticks @ ~60s ≈ 2 min grace.
+AWAY_MISSES=2
+
+# Space-separated sinks. A bare name resolves to adapters/<name>.sh; an
+# absolute path is used as-is so you can keep private sinks outside the repo.
+#   stdout   (edge)      reference: prints transitions only
+#   webhook  (heartbeat) POSTs present|away to an HTTP endpoint every tick
+SINKS="stdout"
+
+# ---- per-sink config ----
+# webhook sink (PRESENCE_WEBHOOK_URL is REQUIRED when SINKS includes "webhook"):
+# PRESENCE_WEBHOOK_URL="https://example.com/presence"
+# Optional bearer token — set it however you like, e.g. from your keychain:
+# PRESENCE_WEBHOOK_TOKEN="$(security find-generic-password -s my-service -a my-account -w)"

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  presence-watch LaunchAgent. Runs bin/presence-watch.sh every 60s (StartInterval
+  re-execs the file each tick, so edits + config changes go live next run — no
+  reload needed). Reads Apple Watch Bluetooth RSSI and dispatches to the sinks
+  named in presence.conf.
+
+  Install:
+    1. Replace YOUR_USERNAME and the script path below with your real absolute
+       paths (LaunchAgents can't expand ~ or $HOME).
+    2. cp install/com.presence-watch.plist.example ~/Library/LaunchAgents/com.presence-watch.plist
+    3. launchctl load ~/Library/LaunchAgents/com.presence-watch.plist
+
+  Logs go to your user Logs dir, NOT /tmp: presence reveals when you're home, and
+  /tmp is world-readable and a predictable symlink target on multi-user Macs.
+
+  Status / logs:
+    launchctl list | grep presence-watch
+    tail -f ~/Library/Logs/presence-watch.log
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.presence-watch</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>/ABSOLUTE/PATH/TO/presence-watch/bin/presence-watch.sh</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StartInterval</key>
+  <integer>60</integer>
+
+  <key>StandardOutPath</key>
+  <string>/Users/YOUR_USERNAME/Library/Logs/presence-watch.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/YOUR_USERNAME/Library/Logs/presence-watch.log</string>
+</dict>
+</plist>
